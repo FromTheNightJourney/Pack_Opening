@@ -28,16 +28,20 @@ const setConfigs = {
 };
 
 const filterCards = (set, rarity, excludeBasicLands = true, isBonusSheet = false) => {
-  
   return allCards.filter(c => {
-    (isBonusSheet || c.booster !== false || c.promo_types?.includes('boosterfun') || set === 'msh')
-
     if (c.set !== set || c.rarity !== rarity) return false;
     if (excludeBasicLands && c.type_line && c.type_line.includes("Basic Land")) return false;
     if (c.promo_types && c.promo_types.includes('serialized')) return false;
     if (c.promo_types && (c.promo_types.includes('gameday') || c.promo_types.includes('release') || c.promo_types.includes('prerelease'))) return false;
+
     if (isBonusSheet) return true;
-    if (c.booster === false && !c.promo_types?.includes('boosterfun')) return false;
+    const exemptSets = ['msh', 'spm', 'fin', 'tla'];
+    
+    if (!exemptSets.includes(set)) {
+      // Only apply this strict check to normal sets where Scryfall is accurate
+      if (c.booster === false && !c.promo_types?.includes('boosterfun')) return false;
+    }
+
     return true;
   });
 };
