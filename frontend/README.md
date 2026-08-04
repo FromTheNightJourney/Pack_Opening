@@ -1,16 +1,13 @@
-# React + Vite
+Made this for fun.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+If you would like to use it, install it, then run "npm install".
 
-Currently, two official plugins are available:
+Install the "default cards" jsonl file and rename it to cards.jsonl, then put it in the backend folder.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Link: https://scryfall.com/docs/api/bulk-data
 
-## React Compiler
+Run the backend using node server.js.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Run the frontend using npm run dev.
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Happy pack opening!

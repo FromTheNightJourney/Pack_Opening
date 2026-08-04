@@ -7,6 +7,12 @@
   max-width: 100%;
 }
 
+body, .app-wrapper {
+  user-select: none;
+  -webkit-user-select: none; /* Safari */
+  -ms-user-select: none;     /* IE/Edge */
+}
+
 body {
   margin: 0;
   padding: 0;
@@ -14,14 +20,7 @@ body {
   color: white;
   font-family: system-ui, sans-serif;
   overflow: hidden;
-}
-body {
-  margin: 0;
-  padding: 0;
-  background-color: #1a1a1a;
-  color: white;
-  font-family: system-ui, sans-serif;
-  overflow: hidden; 
+  
 }
 
 .app-wrapper {
