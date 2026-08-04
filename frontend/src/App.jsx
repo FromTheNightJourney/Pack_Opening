@@ -59,7 +59,6 @@ function App() {
         setPack(data);
         console.table(data.map((c, i) => ({ Slot: i + 1, Name: c.name, Set: c.set, Rarity: c.rarity })));
         
-        // Add pack price to total spent
         const price = packPrices[cleanSetCode] || packPrices.default;
         setTotalSpent(prev => prev + price);
 
