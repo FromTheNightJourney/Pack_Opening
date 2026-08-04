@@ -65,10 +65,12 @@ const getRandom = (arr) => {
 const roll = (chance) => Math.random() < chance;
 
 const pickWildcardRarity = () => {
-  if (roll(0.01)) return 'mythic';
-  if (roll(0.07)) return 'rare';
-  if (roll(0.20)) return 'uncommon';
-  return 'common';
+  const chance = Math.random(); 
+
+  if (chance < 0.024) return 'mythic'; 
+  if (chance < 0.166) return 'rare';      
+  if (chance < 0.583) return 'uncommon';  
+  return 'common';                 
 };
 
 const getWildcard = (set) => {
