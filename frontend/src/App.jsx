@@ -53,7 +53,8 @@ function App() {
     
     try {
       const cleanSetCode = setCode.trim().toLowerCase();
-      const res = await fetch(`http://localhost:3005/api/open-pack?set=${cleanSetCode}`);
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3005';
+      const res = await fetch(`${API_URL}/api/open-pack?set=${cleanSetCode}`);
       const data = await res.json();
       
       if (res.ok) {
