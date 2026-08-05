@@ -4,7 +4,8 @@ import cardBackImg from './assets/cardback.png';
 import defaultBg from './assets/wood.png'; 
 
 function App() {
-  const [setCode, setSetCode] = useState('woe');
+  const [setCode, setSetCode] = useState('spm');
+  const [showDisclaimer, setShowDisclaimer] = useState(true);
   const [pack, setPack] = useState([]);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
@@ -17,7 +18,7 @@ function App() {
   const [edgeStep, setEdgeStep] = useState(0); 
 
   const [totalSpent, setTotalSpent] = useState(0);
-  const [totalEarned, setTotalEarned] = useState(0); // 👈 Added tracking for card sales
+  const [totalEarned, setTotalEarned] = useState(0);
   const [isDeductOpen, setIsDeductOpen] = useState(false);
   const [deductInput, setDeductInput] = useState('');
 
@@ -73,14 +74,28 @@ function App() {
     }
   };
 
-  const handleStackClick = () => {
+const handleStackClick = () => {
     if (!cardFlipped) {
       setCardFlipped(true);
     } else {
-      const side = Math.random() < 0.5 ? -1 : 1;
-      const xOffset = side * (Math.random() * 400 + 180); 
-      const yOffset = (Math.random() - 0.5) * 500; 
-      const rotation = (Math.random() - 0.5) * 60; 
+      const isMobile = window.innerWidth < 768;
+      
+      // 1. INCREASED MINIMUMS: Ensure they clear the center stack's width
+      const baseMin = isMobile ? 110 : 180; 
+      const baseMax = isMobile ? 160 : 380;
+      const yMax = isMobile ? 180 : 350; // Tightened Y so they don't fly off screen
+      const rotMax = isMobile ? 20 : 40; 
+
+      // 2. ALTERNATE SIDES: Even index goes left (-1), odd goes right (1)
+      const side = (currentIndex % 2 === 0) ? -1 : 1; 
+      
+      // Calculate positions
+      const xOffset = side * (Math.random() * (baseMax - baseMin) + baseMin); 
+      const yOffset = (Math.random() - 0.5) * yMax; 
+      
+      // 3. OUTWARD TILT: Base rotation outward so they look like a natural fan
+      const baseRotation = side * 15; 
+      const rotation = baseRotation + (Math.random() - 0.5) * rotMax; 
 
       const newlyRevealed = {
         ...pack[currentIndex],
@@ -105,7 +120,7 @@ function App() {
   const handleConfirmDeduction = () => {
     const amount = parseFloat(deductInput);
     if (!isNaN(amount) && amount > 0) {
-      setTotalEarned(prev => prev + amount); // 👈 Adds to your earnings/revenue
+      setTotalEarned(prev => prev + amount); 
       setIsDeductOpen(false);
     } else {
       alert("Please enter a valid positive number.");
@@ -134,26 +149,8 @@ function App() {
   return (
     <div className="app-wrapper" style={{ backgroundImage: `url(${bgImg})` }}>
       
-      {/* Profit Loss */}
-      <div style={{
-        position: 'absolute',
-        top: '20px',
-        right: '20px',
-        backgroundColor: 'rgba(0, 0, 0, 0.85)',
-        padding: '12px 18px',
-        borderRadius: '8px',
-        border: '1px solid #374151',
-        fontFamily: 'monospace',
-        fontSize: '1.1rem',
-        fontWeight: 'bold',
-        zIndex: 9999,
-        pointerEvents: 'auto',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'flex-end',
-        gap: '8px',
-        boxShadow: '0 4px 6px rgba(0,0,0,0.3)'
-      }}>
+      {/* 📊 Profit Loss (Now uses CSS classes for mobile styling) */}
+      <div className="profit-tracker">
         <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
           <span style={{ color: '#d1d5db' }}>Profit/Loss:</span>
           <span style={{ color: isProfit ? '#4ade80' : '#ef4444' }}>
@@ -162,23 +159,11 @@ function App() {
         </div>
         <button 
           type="button"
+          className="add-amount-btn"
           onClick={(e) => {
             e.stopPropagation();
             handleOpenDeduct();
           }}
-          style={{
-            backgroundColor: '#374151',
-            color: '#d1d5db',
-            border: '1px solid #4b5563',
-            padding: '4px 10px',
-            borderRadius: '4px',
-            cursor: 'pointer',
-            fontSize: '0.8rem',
-            fontWeight: 'normal',
-            transition: 'background 0.2s'
-          }}
-          onMouseEnter={(e) => e.target.style.backgroundColor = '#4b5563'}
-          onMouseLeave={(e) => e.target.style.backgroundColor = '#374151'}
           title="Add earnings from card sales"
         >
           + Add Amount
@@ -188,8 +173,8 @@ function App() {
       <div className="content-overlay">
         
         <header className="header-controls">
-          <h1>"Need to Rip Packs" Syndrome</h1>
-          <div className="controls" style={{ gap: '15px', display: 'flex', alignItems: 'center', flexWrap: 'wrap' }}>
+          <h1>MTG Pack Simulator</h1>
+          <div className="controls">
             <input 
               type="text" 
               value={setCode} 
@@ -256,7 +241,7 @@ function App() {
               onClick={triggerEdge}
               style={{ visibility: cardFlipped ? 'hidden' : 'visible' }}
             >
-              👀 Edge this card
+              Peek at the Rarity/Card ID?
             </button>
           </div>
         )}
@@ -288,32 +273,8 @@ function App() {
       )}
 
       {isDeductOpen && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          width: '100vw',
-          height: '100vh',
-          backgroundColor: 'rgba(0, 0, 0, 0.6)',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          zIndex: 10000,
-          pointerEvents: 'auto'
-        }} onClick={() => setIsDeductOpen(false)}>
-          <div style={{
-            backgroundColor: '#1f2937',
-            border: '1px solid #374151',
-            padding: '24px',
-            borderRadius: '12px',
-            width: '320px',
-            color: 'white',
-            fontFamily: 'sans-serif',
-            boxShadow: '0 10px 25px rgba(0,0,0,0.5)',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '16px'
-          }} onClick={(e) => e.stopPropagation()}>
+        <div className="modal-overlay" onClick={() => setIsDeductOpen(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <h3 style={{ margin: 0, fontSize: '1.2rem' }}>Add Card Sale Earnings</h3>
             <p style={{ margin: 0, fontSize: '0.9rem', color: '#9ca3af' }}>How much was your hit?:</p>
             <input 
@@ -322,48 +283,53 @@ function App() {
               onChange={(e) => setDeductInput(e.target.value)}
               placeholder="e.g. 50000"
               autoFocus
-              style={{
-                backgroundColor: '#111827',
-                border: '1px solid #4b5563',
-                color: 'white',
-                padding: '10px',
-                borderRadius: '6px',
-                fontSize: '1rem',
-                outline: 'none',
-                width: '100%',
-                boxSizing: 'border-box'
-              }}
             />
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '4px' }}>
-              <button 
-                onClick={() => setIsDeductOpen(false)}
-                style={{
-                  backgroundColor: 'transparent',
-                  color: '#9ca3af',
-                  border: 'none',
-                  padding: '8px 12px',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  fontWeight: 'bold'
-                }}
-              >
+            <div className="modal-actions">
+              <button className="cancel-btn" onClick={() => setIsDeductOpen(false)}>
                 Cancel
               </button>
-              <button 
-                onClick={handleConfirmDeduction}
-                style={{
-                  backgroundColor: '#22c55e',
-                  color: 'white',
-                  border: 'none',
-                  padding: '8px 16px',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  fontWeight: 'bold'
-                }}
-              >
+              <button className="confirm-btn" onClick={handleConfirmDeduction}>
                 Add Earnings
               </button>
             </div>
+          </div>
+        </div>
+      )}
+      {/* 🛑 Startup Disclaimer Modal */}
+      {showDisclaimer && (
+        <div className="modal-overlay" style={{ zIndex: 15000 }}>
+          <div className="modal-content" style={{ textAlign: 'center', maxWidth: '400px' }}>
+            <h2 style={{ color: '#f87171', marginTop: 0, marginBottom: '10px' }}>DISCLAIMER!</h2>
+            
+            <p style={{ fontSize: '0.95rem', lineHeight: '1.5', margin: '10px 0', color: '#d1d5db' }}>
+              This is an unofficial fan project. All card images, text, and icons are the intellectual property of Wizards of the Coast.
+            </p>
+            
+            <p style={{ fontSize: '0.95rem', lineHeight: '1.5', margin: '10px 0', color: '#d1d5db' }}>
+              Please note that drop rates and card treatments are simulated. You might occasionally pull Collector Booster exclusive art in these Play Boosters, so keep that in mind!
+            </p>
+
+            <p style={{ fontSize: '1.1rem', fontWeight: 'bold', margin: '15px 0', color: 'white' }}>
+              Enjoy!
+            </p>
+
+            <button 
+              onClick={() => setShowDisclaimer(false)}
+              style={{
+                backgroundColor: '#3b82f6',
+                color: 'white',
+                border: 'none',
+                padding: '12px 20px',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                fontWeight: 'bold',
+                fontSize: '1rem',
+                marginTop: '10px',
+                width: '100%'
+              }}
+            >
+              I Understand
+            </button>
           </div>
         </div>
       )}

@@ -23,4 +23,5 @@ dist-ssr
 *.sln
 *.sw?
 
-backend/cards.jsonl
+backend/ogcards.jsonl
+backend/trim.js
